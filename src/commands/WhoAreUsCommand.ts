@@ -45,8 +45,8 @@ Map Designer: Krystal
 You can contact by creating a ticket in the support channel or by sending a message to one of the team members.
 
 **Social Media**
-Twitter: @ZZZ
-Instagram: @ZZZ
+Twitter: @SafiaCreativefn
+Website: [Safia-Creative](https://www.safia-creative.com/)
           `
         )
         .setColor("Aqua")
