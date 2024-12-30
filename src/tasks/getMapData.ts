@@ -239,16 +239,28 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
             maxRotation: 45,
             minRotation: 45,
             padding: 8,
-            callback: function(_value: any, index: number, values: any[]) {
-              // Calcul du nombre total de ticks souhaité (environ 6-8 selon la période)
-              const desiredTicks = values.length > 48 ? 8 : 6;
-              const step = Math.floor(values.length / desiredTicks);
+            callback: function(_value: any, index: number, _values: any[]) {
+              const timestamp = entries[index].timestamp;
+              const minutes = moment(timestamp).minutes();
               
-              // N'affiche que les dates clés
-              if (index === 0 || // Première date
-                  index === values.length - 1 || // Dernière date
-                  index % step === 0) { // Dates intermédiaires espacées régulièrement
-                return moment(entries[index].timestamp).format('DD/MM HH:mm');
+              // Personnalisation selon la période
+              if (title.includes('1 heure')) {
+                // Affichage toutes les 5 minutes pour le graphique horaire
+                if (minutes % 5 === 0) {
+                  return moment(timestamp).format('HH:mm');
+                }
+              } 
+              else if (title.includes('1 jour')) {
+                // Affichage toutes les heures pour le graphique journalier
+                if (minutes === 0) {
+                  return moment(timestamp).format('HH:mm');
+                }
+              }
+              else if (title.includes('1 semaine')) {
+                // Affichage toutes les 12h pour le graphique hebdomadaire
+                if (minutes === 0 && moment(timestamp).hours() % 12 === 0) {
+                  return moment(timestamp).format('DD/MM HH:mm');
+                }
               }
               return '';
             },
