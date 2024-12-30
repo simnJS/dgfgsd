@@ -11,7 +11,7 @@ import { AttachmentBuilder, EmbedBuilder, TextChannel } from 'discord.js';
 // ----------------------------------------------------------------
 export async function scrapeFortniteCCU(url: string): Promise<number | null> {
   try {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
     const page = await browser.newPage();
 
     // Configure l'user-agent
