@@ -1,3 +1,6 @@
+/********************************************************************
+ *  SCRAPE FORTNITE CCU
+ ********************************************************************/
 import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
@@ -10,28 +13,36 @@ import { AttachmentBuilder, EmbedBuilder, TextChannel } from 'discord.js';
 // 1) Fonction pour récupérer le CCU Fortnite via Puppeteer
 // ----------------------------------------------------------------
 export async function scrapeFortniteCCU(url: string): Promise<number | null> {
+  console.log('[SCRAPE] Début de scrapeFortniteCCU...');
+
   try {
-    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+    console.log('[SCRAPE] Lancement de Puppeteer...');
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'], 
+    });
+    console.log('[SCRAPE] Navigateur lancé avec --no-sandbox.');
+
     const page = await browser.newPage();
-
-    // Configure l'user-agent
-    await page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    );
-
-    // Accès à la page
+    console.log('[SCRAPE] Nouvelle page créée, accès à l\'URL...');
     await page.goto(url, { waitUntil: 'networkidle2' });
+    console.log('[SCRAPE] Page chargée.');
 
     // Récupération du texte du <span data-testid="ccu">
+    console.log('[SCRAPE] Extraction de la valeur CCU...');
     const ccuValue = await page.evaluate(() => {
       const spanCcu = document.querySelector('span[data-testid="ccu"]');
       return spanCcu ? Number(spanCcu.textContent!.trim()) : null;
     });
 
+    console.log(`[SCRAPE] Valeur récupérée: ${ccuValue}`);
+    console.log('[SCRAPE] Fermeture du navigateur...');
     await browser.close();
+    console.log('[SCRAPE] Navigateur fermé, fin de scrapeFortniteCCU.');
+
     return ccuValue;
   } catch (error) {
-    console.error('Erreur lors du scraping :', error);
+    console.error('[SCRAPE] Erreur lors du scraping :', error);
     return null;
   }
 }
@@ -46,27 +57,27 @@ interface CCUEntry {
 
 const DATA_FILE_PATH = path.join(__dirname, '../data/ccu-data.json');
 
-/**
- * Lit le fichier ccu-data.json et retourne un tableau de CCUEntry
- */
 function readCCUData(): CCUEntry[] {
+  console.log('[JSON] Lecture du fichier ccu-data.json...');
   if (!fs.existsSync(DATA_FILE_PATH)) {
+    console.log('[JSON] Fichier inexistant, on retourne un tableau vide.');
     return [];
   }
   const content = fs.readFileSync(DATA_FILE_PATH, 'utf-8');
   try {
-    return JSON.parse(content) as CCUEntry[];
+    const parsed = JSON.parse(content) as CCUEntry[];
+    console.log(`[JSON] Lecture réussie, nombre d'entrées: ${parsed.length}`);
+    return parsed;
   } catch (error) {
-    console.error('Erreur de parsing JSON :', error);
+    console.error('[JSON] Erreur de parsing JSON :', error);
     return [];
   }
 }
 
-/**
- * Écrit le tableau de CCUEntry dans ccu-data.json
- */
 function writeCCUData(data: CCUEntry[]): void {
+  console.log(`[JSON] Écriture de ${data.length} entrées dans ccu-data.json...`);
   fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  console.log('[JSON] Écriture terminée.');
 }
 
 // ----------------------------------------------------------------
@@ -80,24 +91,20 @@ const chartJSNodeCanvas = new ChartJSNodeCanvas({
   backgroundColour: '#2f3136', // exemple de gris type Discord
 });
 
-/**
- * Génère un fichier image PNG représentant les données passées en paramètre
- * @param entries Tableau d'entrées (timestamp + ccu)
- * @param outputPath Chemin de sortie de l'image
- * @param title Titre du graphique
- */
 async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: string) {
-  if (entries.length === 0) return;
+  console.log(`[CHART] Génération du graphe : "${title}" -> ${outputPath}`);
+  if (entries.length === 0) {
+    console.log('[CHART] Aucune data, on ne génère pas le graphique.');
+    return;
+  }
 
   // Tri par date (au cas où)
   entries.sort((a, b) => a.timestamp - b.timestamp);
-
-  // Prépare les labels (heures, dates, etc.)
+  // Labels
   const labels = entries.map((entry) => moment(entry.timestamp).format('DD/MM HH:mm'));
-  // Prépare la data
+  // Data
   const data = entries.map((entry) => entry.ccu);
 
-  // Configuration du graphique Chart.js
   const configuration: any = {
     type: 'line',
     data: {
@@ -106,10 +113,10 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
         {
           label: 'Nombre de joueurs connectés',
           data,
-          borderColor: '#7289da',             // Exemple couleur bleue type Discord
-          backgroundColor: 'rgba(114,137,218, 0.2)', // Couleur bleue semi-transparente
+          borderColor: '#7289da', 
+          backgroundColor: 'rgba(114,137,218, 0.2)',
           fill: true,
-          tension: 0.2,                       // Courbe plus smooth
+          tension: 0.2,
         },
       ],
     },
@@ -119,13 +126,13 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
           beginAtZero: true,
           title: { display: true, text: 'Joueurs simultanés', color: '#ffffff' },
           ticks: {
-            color: '#ffffff', // Couleur des graduations
+            color: '#ffffff',
           },
         },
         x: {
           title: { display: true, text: 'Date/Heure', color: '#ffffff' },
           ticks: {
-            color: '#ffffff', // Couleur des labels sur l'axe X
+            color: '#ffffff',
           },
         },
       },
@@ -137,28 +144,25 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
         },
         legend: {
           labels: {
-            color: '#ffffff', // Couleur du label de la légende
+            color: '#ffffff',
           },
         },
       },
     },
   };
-  
 
-  // Génération de l'image
-  const imageBuffer = await chartJSNodeCanvas.renderToBuffer(configuration);
-  fs.writeFileSync(outputPath, new Uint8Array(imageBuffer));
-  console.log(`Graphique généré : ${outputPath}`);
+  try {
+    const imageBuffer = await chartJSNodeCanvas.renderToBuffer(configuration);
+    fs.writeFileSync(outputPath, new Uint8Array(imageBuffer));
+    console.log(`[CHART] Graphique généré avec succès : ${outputPath}`);
+  } catch (err) {
+    console.error('[CHART] Erreur lors de la génération du graphique :', err);
+  }
 }
 
 // ----------------------------------------------------------------
 // 4) Filtrage des données sur 1h, 24h, 7j
 // ----------------------------------------------------------------
-/**
- * Retourne les données dont le timestamp est >= now - période
- * @param entries tableau d'entrées
- * @param durationInMs période en millisecondes (1h, 1 jour, etc.)
- */
 function filterDataByDuration(entries: CCUEntry[], durationInMs: number): CCUEntry[] {
   const now = Date.now();
   return entries.filter((entry) => entry.timestamp >= now - durationInMs);
@@ -167,13 +171,17 @@ function filterDataByDuration(entries: CCUEntry[], durationInMs: number): CCUEnt
 // ----------------------------------------------------------------
 // 5) Script principal
 // ----------------------------------------------------------------
-export async function main(client : SapphireClient) {
+export async function main(client: SapphireClient) {
+  console.log('[MAIN] Début du script principal.');
+
   // 5.1 : On scrape la valeur de CCU actuelle
-  const urlFortnite = 'https://www.fortnite.com/@safia/5352-4561-8315?lang=fr'; // <-- Remplacez par l'URL réelle
+  const urlFortnite = 'https://www.fortnite.com/@safia/5352-4561-8315?lang=fr';
+  console.log('[MAIN] Appel de scrapeFortniteCCU...');
   const currentCCU = await scrapeFortniteCCU(urlFortnite);
+  console.log(`[MAIN] currentCCU = ${currentCCU}`);
 
   if (currentCCU === null) {
-    console.log('Impossible de récupérer le CCU.');
+    console.log('[MAIN] Impossible de récupérer le CCU. Fin du script principal.');
     return;
   }
 
@@ -181,6 +189,7 @@ export async function main(client : SapphireClient) {
   const ccuData = readCCUData();
 
   // 5.3 : On ajoute la nouvelle entrée (avec un timestamp)
+  console.log('[MAIN] Ajout de la nouvelle entrée dans ccuData...');
   ccuData.push({
     timestamp: Date.now(),
     ccu: currentCCU,
@@ -194,44 +203,42 @@ export async function main(client : SapphireClient) {
   const oneDayMs = 24 * oneHourMs;
   const oneWeekMs = 7 * oneDayMs;
 
-
-  // a) Graphique sur 1 Chart
+  console.log('[MAIN] Génération graphique (1 heure)...');
   const ccuLastHour = filterDataByDuration(ccuData, oneHourMs);
-  await generateCCUChart(
-    ccuLastHour,
-    path.join(__dirname, `../charts/ccu-last-hour.png`),
-    'Évolution du CCU (1 heure)'
-  );
+  await generateCCUChart(ccuLastHour, path.join(__dirname, `../charts/ccu-last-hour.png`), 'Évolution du CCU (1 heure)');
 
-  // b) Graphique sur 1 jour
+  console.log('[MAIN] Génération graphique (1 jour)...');
   const ccuLastDay = filterDataByDuration(ccuData, oneDayMs);
-  await generateCCUChart(
-    ccuLastDay,
-    path.join(__dirname, `../charts/ccu-last-day.png`),
-    'Évolution du CCU (1 jour)'
-  );
+  await generateCCUChart(ccuLastDay, path.join(__dirname, `../charts/ccu-last-day.png`), 'Évolution du CCU (1 jour)');
 
-  // c) Graphique sur 1 semaine
+  console.log('[MAIN] Génération graphique (1 semaine)...');
   const ccuLastWeek = filterDataByDuration(ccuData, oneWeekMs);
-  await generateCCUChart(
-    ccuLastWeek,
-    path.join(__dirname, `../charts/ccu-last-week.png`),
-    'Évolution du CCU (1 semaine)'
-  );
+  await generateCCUChart(ccuLastWeek, path.join(__dirname, `../charts/ccu-last-week.png`), 'Évolution du CCU (1 semaine)');
 
-  discordSendGraph('1323329404386148445', client);
-  console.log('Fin du script principal.');
+  console.log('[MAIN] Envoi sur Discord...');
+  await discordSendGraph('1323329404386148445', client);
+
+  console.log('[MAIN] Fin du script principal.');
 }
 
-// Lancement du script principal
-
+// ----------------------------------------------------------------
+// 6) Envoi des images sur Discord
+// ----------------------------------------------------------------
 let lastMessageId = '1234567890'; // ID du dernier message envoyé
 
-async function discordSendGraph(channelId: string, client : SapphireClient) {
-  const channel = await client.channels.fetch(channelId) as TextChannel;
-  if (!channel?.isTextBased()) return;
+async function discordSendGraph(channelId: string, client: SapphireClient) {
+  console.log('[DISCORD] Début de discordSendGraph...');
+  const channel = await client.channels.fetch(channelId);
+  console.log('[DISCORD] Canal récupéré, vérification isTextBased...');
 
-  // create 3 embeds for the 3 images
+  if (!channel?.isTextBased()) {
+    console.log('[DISCORD] Le canal n\'est pas textuel. Fin de discordSendGraph.');
+    return;
+  }
+
+  const textChannel = channel as TextChannel;
+
+  console.log('[DISCORD] Préparation des embeds...');
   const OneHourEmbed = new EmbedBuilder()
     .setTitle('Évolution du CCU (1 heure)')
     .setImage('attachment://ccu-last-hour.png')
@@ -246,28 +253,30 @@ async function discordSendGraph(channelId: string, client : SapphireClient) {
     .setTitle('Évolution du CCU (1 semaine)')
     .setImage('attachment://ccu-last-week.png')
     .setColor('#7289da');
-  
 
-
-
-
-
-
-  // Envoi des graphiques
+  console.log('[DISCORD] Chargement des fichiers...');
   const lastHourAttachment = new AttachmentBuilder(path.join(__dirname, '../charts/ccu-last-hour.png'));
   const lastDayAttachment = new AttachmentBuilder(path.join(__dirname, '../charts/ccu-last-day.png'));
   const lastWeekAttachment = new AttachmentBuilder(path.join(__dirname, '../charts/ccu-last-week.png'));
 
-  const lastMessage = await channel.messages.fetch(lastMessageId).catch(() => null);
+  console.log(`[DISCORD] Récupération du dernier message avec ID=${lastMessageId} pour suppression éventuelle...`);
+  const lastMessage = await textChannel.messages.fetch(lastMessageId).catch(() => null);
+
   if (lastMessage) {
+    console.log('[DISCORD] Dernier message trouvé, suppression...');
     await lastMessage.delete();
+  } else {
+    console.log('[DISCORD] Aucun dernier message à supprimer.');
   }
 
-  const message = await channel.send({
+  console.log('[DISCORD] Envoi du nouveau message...');
+  const message = await textChannel.send({
     content: 'Évolution du CCU Fortnite :',
     files: [lastHourAttachment, lastDayAttachment, lastWeekAttachment],
-    embeds: [OneHourEmbed, OneDayEmbed, OneWeekEmbed]
+    embeds: [OneHourEmbed, OneDayEmbed, OneWeekEmbed],
   });
 
+  console.log(`[DISCORD] Message envoyé avec succès, new message ID = ${message.id}`);
   lastMessageId = message.id;
+  console.log('[DISCORD] Fin de discordSendGraph.');
 }
