@@ -239,26 +239,25 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
             maxRotation: 45,
             minRotation: 45,
             padding: 8,
-            callback: function(_value: any, index: number, _values: any[]) {
+            callback: function(_value: any, index: number, values: any[]) {
               const timestamp = entries[index].timestamp;
-              const minutes = moment(timestamp).minutes();
               
-              // Personnalisation selon la période
+              // Calcul du nombre d'intervalles selon la période
               if (title.includes('1 heure')) {
-                // Affichage toutes les 5 minutes pour le graphique horaire
-                if (minutes % 5 === 0) {
+                // ~12 points pour 1h (environ toutes les 5 minutes)
+                if (index === 0 || index === values.length - 1 || index % Math.max(1, Math.floor(values.length / 12)) === 0) {
                   return moment(timestamp).format('HH:mm');
                 }
               } 
               else if (title.includes('1 jour')) {
-                // Affichage toutes les heures pour le graphique journalier
-                if (minutes === 0) {
+                // ~24 points pour 24h (environ toutes les heures)
+                if (index === 0 || index === values.length - 1 || index % Math.max(1, Math.floor(values.length / 24)) === 0) {
                   return moment(timestamp).format('HH:mm');
                 }
               }
               else if (title.includes('1 semaine')) {
-                // Affichage toutes les 12h pour le graphique hebdomadaire
-                if (minutes === 0 && moment(timestamp).hours() % 12 === 0) {
+                // ~14 points pour 7j (environ toutes les 12h)
+                if (index === 0 || index === values.length - 1 || index % Math.max(1, Math.floor(values.length / 14)) === 0) {
                   return moment(timestamp).format('DD/MM HH:mm');
                 }
               }
