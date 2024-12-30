@@ -2,6 +2,13 @@
  *  SCRAPE FORTNITE CCU
  ********************************************************************/
 import puppeteer from 'puppeteer-extra';
+
+// Extend the Window interface to include __remixContext
+declare global {
+  interface Window {
+    __remixContext?: any;
+  }
+}
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import fs from 'fs';
 import path from 'path';
@@ -43,14 +50,29 @@ export async function scrapeFortniteCCU(url: string): Promise<number | null> {
     console.log('[SCRAPE] Extrait du HTML (500 premiers caractères) :');
     console.log(html.slice(0, 500));
 
-    // Récupération du texte du <span data-testid="ccu">
-    console.log('[SCRAPE] Extraction de la valeur CCU...');
+    // Extraction depuis __remixContext :
+    // On récupère le CCU de la map dont le code est celui
+    // passé dans l'URL (p.ex. "1314-1221-7678").
     const ccuValue = await page.evaluate(() => {
-      const spanCcu = document.querySelector('span[data-testid="ccu"]');
-      return spanCcu ? Number(spanCcu.textContent!.trim()) : null;
+      try {
+        const data = window.__remixContext
+          ?.state
+          ?.loaderData?.["routes/$creatorCode.$islandCode"];
+
+        if (!data?.island?.ccu) {
+          console.warn('[SCRAPE] Impossible de trouver data.island.ccu');
+          return null;
+        }
+        
+        return data.island.ccu ?? null;
+      } catch (error) {
+        console.error('[SCRAPE] Erreur evaluate() :', error);
+        return null;
+      }
     });
 
-    console.log(`[SCRAPE] Valeur récupérée: ${ccuValue}`);
+    console.log(`[SCRAPE] Valeur CCU récupérée : ${ccuValue}`);
+    
     console.log('[SCRAPE] Fermeture du navigateur...');
     await browser.close();
     console.log('[SCRAPE] Navigateur fermé, fin de scrapeFortniteCCU.');

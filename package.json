@@ -27,6 +27,8 @@
     "prisma": "^5.20.0",
     "puppeteer": "^23.11.1",
     "puppeteer-core": "^23.5.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "sapphire": "^0.0.3",
     "twitter-api-v2": "^1.18.0",
     "vm2": "^3.9.19"
