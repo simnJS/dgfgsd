@@ -38,6 +38,9 @@ importers:
       cheerio:
         specifier: ^1.0.0
         version: 1.0.0
+      cloudscraper:
+        specifier: ^4.6.0
+        version: 4.6.0(brotli@1.3.3)(request@2.88.2)
       colorette:
         specifier: ^2.0.20
         version: 2.0.20
@@ -87,6 +90,9 @@ importers:
       '@sapphire/ts-config':
         specifier: ^5.0.0
         version: 5.0.1
+      '@types/bluebird':
+        specifier: ^3.5.42
+        version: 3.5.42
       '@types/cheerio':
         specifier: ^0.22.35
         version: 0.22.35
@@ -99,6 +105,12 @@ importers:
       '@types/puppeteer-core':
         specifier: ^7.0.4
         version: 7.0.4
+      '@types/request':
+        specifier: ^2.48.12
+        version: 2.48.12
+      '@types/request-promise':
+        specifier: ^4.1.51
+        version: 4.1.51
       '@types/ws':
         specifier: ^8.5.10
         version: 8.5.12
@@ -275,6 +287,12 @@ packages:
   '@tootallnate/quickjs-emscripten@0.23.0':
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
 
+  '@types/bluebird@3.5.42':
+    resolution: {integrity: sha512-Jhy+MWRlro6UjVi578V/4ZGNfeCOcNCp0YaFNIUGFKlImowqwb1O/22wDVk3FDGMLqxdpOV3qQHD5fPEH4hK6A==}
+
+  '@types/caseless@0.12.5':
+    resolution: {integrity: sha512-hWtVTC2q7hc7xZ/RLbxapMvDMgUnDvKvMOpKal4DrMyfGBUfB1oKaZlIRr6mJL+If3bAP6sV/QneGzF6tJjZDg==}
+
   '@types/cheerio@0.22.35':
     resolution: {integrity: sha512-yD57BchKRvTV+JD53UZ6PD8KWY5g5rvvMLRnZR3EQBCZXiDT/HR+pKpMzFGlWNhFrXlo7VPZXtKvIEwZkAWOIA==}
 
@@ -297,8 +315,17 @@ packages:
     resolution: {integrity: sha512-7YK4lAjXTAsFN0HFWSRr43J1iQX+xoI5EXyOYnG6F+OhqkTR+L8bYnU8dqELrKmzvbSlxczh3F7dEBJ7TriqEw==}
     deprecated: This is a stub types definition. puppeteer-core provides its own type definitions, so you do not need this installed.
 
+  '@types/request-promise@4.1.51':
+    resolution: {integrity: sha512-qVcP9Fuzh9oaAh8oPxiSoWMFGnWKkJDknnij66vi09Yiy62bsSDqtd+fG5kIM9wLLgZsRP3Y6acqj9O/v2ZtRw==}
+
+  '@types/request@2.48.12':
+    resolution: {integrity: sha512-G3sY+NpsA9jnwm0ixhAFQSJ3Q9JkpLZpJbI3GMv0mIAT0y3mRabYeINzal5WOChIiaTEGQYlHOKgkaM9EisWHw==}
+
   '@types/responselike@1.0.3':
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==}
+
+  '@types/tough-cookie@4.0.5':
+    resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
 
   '@types/ws@8.5.12':
     resolution: {integrity: sha512-3tPRkv1EtkDpzlgyKyI8pGsGZAGPEaXeu0DOj5DI25Ja91bdAYddYHbADRYVrZMRbfW+1l5YwXVDKohDJNQxkQ==}
@@ -519,6 +546,9 @@ packages:
   bluebird@2.11.0:
     resolution: {integrity: sha512-UfFSr22dmHPQqPP9XWHRhq+gWnHCYguQGkXQlbyPtW5qTnhFWA8/iXg765tH0cAjy7l/zPJ1aBTO0g5XgA7kvQ==}
 
+  bluebird@3.7.2:
+    resolution: {integrity: sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==}
+
   boolbase@1.0.0:
     resolution: {integrity: sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==}
 
@@ -532,6 +562,9 @@ packages:
 
   brace-expansion@2.0.1:
     resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
+
+  brotli@1.3.3:
+    resolution: {integrity: sha512-oTKjJdShmDuGW94SyyaoQvAjf30dZaHnjJ8uAF+u2/vGJkJbJPJAT1gDiOJP5v1Zb6f9KEyW/1HpuaWIXtGHPg==}
 
   buffer-crc32@0.2.13:
     resolution: {integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==}
@@ -642,6 +675,13 @@ packages:
   clone@1.0.4:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
     engines: {node: '>=0.8'}
+
+  cloudscraper@4.6.0:
+    resolution: {integrity: sha512-42g6atOAQwhoMlzCYsB1238RYEQa3ibcxhjVeYuZQDLGSZjBNAKOlF/2kcPwZUhlRKA9LDwuYQ7/0LCoMui2ww==}
+    engines: {node: '>=8'}
+    peerDependencies:
+      brotli: ^1.3.2
+      request: ^2.88.0
 
   color-convert@0.5.3:
     resolution: {integrity: sha512-RwBeO/B/vZR3dfKL1ye/vx8MHZ40ugzpyfeVG5GsiuGnrlMWe2o8wxBbLCpw9CsxV+wHuzYlCiWnybrIA0ling==}
@@ -1125,6 +1165,10 @@ packages:
 
   form-data@2.3.3:
     resolution: {integrity: sha512-1lLKB2Mu3aGP1Q/2eCOx0fNbRMe7XdwktwOruhfqqd0rIJWwN4Dh+E3hrPSlDCXnSR7UtZ1N38rVXm+6+MEhJQ==}
+    engines: {node: '>= 0.12'}
+
+  form-data@2.5.2:
+    resolution: {integrity: sha512-GgwY0PS7DbXqajuGf4OYlsrIu3zgxD6Vvql43IBhm6MahqA5SK/7mwhtNj2AdH2z35YR34ujJ7BN+3fFC3jP5Q==}
     engines: {node: '>= 0.12'}
 
   form-data@4.0.0:
@@ -2199,6 +2243,19 @@ packages:
   replacestream@0.0.6:
     resolution: {integrity: sha512-N/Ah+5W8aZzm9jun4ab8nqWb1D7X8lShAlkL2gxJL+6OsHp4kMAK5DW9w5sX4lG4QV8NzfhraqNZeKatA37z3w==}
 
+  request-promise-core@1.1.4:
+    resolution: {integrity: sha512-TTbAfBBRdWD7aNNOoVOBH4pN/KigV6LyapYNNlAPA8JwbovRti1E88m3sYAwsLi5ryhPKsE9APwnjFTgdUjTpw==}
+    engines: {node: '>=0.10.0'}
+    peerDependencies:
+      request: ^2.34
+
+  request-promise@4.2.6:
+    resolution: {integrity: sha512-HCHI3DJJUakkOr8fNoCc73E5nU5bqITjOYFMDrKHYOXWXrgD/SBaC7LjwuPymUprRyuF06UK7hd/lMHkmUXglQ==}
+    engines: {node: '>=0.10.0'}
+    deprecated: request-promise has been deprecated because it extends the now deprecated request package, see https://github.com/request/request/issues/3142
+    peerDependencies:
+      request: ^2.34
+
   request@2.40.0:
     resolution: {integrity: sha512-waNoGB4Z7bPn+lgqPk7l7hhze4Vd68jKccnwLeS7vr9GMxz0iWQbYTbBNWzfIk87Urx7V44pu29qjF/omej+Fw==}
     engines: {'0': node >= 0.8.0}
@@ -2372,6 +2429,10 @@ packages:
   stable@0.1.8:
     resolution: {integrity: sha512-ji9qxRnOVfcuLDySj9qzhGSEFVobyt1kIOSkj1qZzYLzq7Tos/oUUWvotUPQLlrsidqsK6tBH89Bc9kL5zHA6w==}
     deprecated: 'Modern JS already guarantees Array#sort() is a stable sort, so this library is deprecated. See the compatibility table on MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#browser_compatibility'
+
+  stealthy-require@1.1.1:
+    resolution: {integrity: sha512-ZnWpYnYugiOVEY5GkcuJK1io5V8QmNYChG62gSit9pQVGErXtrKuPC55ITaVSukmMta5qpMU7vqLt2Lnni4f/g==}
+    engines: {node: '>=0.10.0'}
 
   stream-combiner@0.0.4:
     resolution: {integrity: sha512-rT00SPnTVyRsaSz5zgSPma/aHSOic5U1prhYdRy5HS2kTZviFpmDgzilbtsJsxiroqACmayynDN/9VzIbX5DOw==}
@@ -2983,6 +3044,10 @@ snapshots:
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
 
+  '@types/bluebird@3.5.42': {}
+
+  '@types/caseless@0.12.5': {}
+
   '@types/cheerio@0.22.35':
     dependencies:
       '@types/node': 20.16.9
@@ -3015,10 +3080,24 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  '@types/request-promise@4.1.51':
+    dependencies:
+      '@types/bluebird': 3.5.42
+      '@types/request': 2.48.12
+
+  '@types/request@2.48.12':
+    dependencies:
+      '@types/caseless': 0.12.5
+      '@types/node': 20.16.9
+      '@types/tough-cookie': 4.0.5
+      form-data: 2.5.2
+
   '@types/responselike@1.0.3':
     dependencies:
       '@types/node': 20.16.9
     optional: true
+
+  '@types/tough-cookie@4.0.5': {}
 
   '@types/ws@8.5.12':
     dependencies:
@@ -3070,7 +3149,6 @@ snapshots:
       fast-json-stable-stringify: 2.1.0
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
-    optional: true
 
   amdefine@1.0.1: {}
 
@@ -3121,13 +3199,11 @@ snapshots:
   asn1@0.2.6:
     dependencies:
       safer-buffer: 2.1.2
-    optional: true
 
   assert-plus@0.1.5:
     optional: true
 
-  assert-plus@1.0.0:
-    optional: true
+  assert-plus@1.0.0: {}
 
   ast-types@0.13.4:
     dependencies:
@@ -3145,11 +3221,9 @@ snapshots:
   aws-sign2@0.5.0:
     optional: true
 
-  aws-sign2@0.7.0:
-    optional: true
+  aws-sign2@0.7.0: {}
 
-  aws4@1.13.2:
-    optional: true
+  aws4@1.13.2: {}
 
   axios@1.7.7:
     dependencies:
@@ -3194,7 +3268,6 @@ snapshots:
   bcrypt-pbkdf@1.0.2:
     dependencies:
       tweetnacl: 0.14.5
-    optional: true
 
   beeper@1.1.1: {}
 
@@ -3235,6 +3308,8 @@ snapshots:
 
   bluebird@2.11.0: {}
 
+  bluebird@3.7.2: {}
+
   boolbase@1.0.0: {}
 
   boom@0.4.2:
@@ -3250,6 +3325,10 @@ snapshots:
   brace-expansion@2.0.1:
     dependencies:
       balanced-match: 1.0.2
+
+  brotli@1.3.3:
+    dependencies:
+      base64-js: 1.5.1
 
   buffer-crc32@0.2.13: {}
 
@@ -3293,8 +3372,7 @@ snapshots:
       - encoding
       - supports-color
 
-  caseless@0.12.0:
-    optional: true
+  caseless@0.12.0: {}
 
   chalk@0.4.0:
     dependencies:
@@ -3398,6 +3476,12 @@ snapshots:
 
   clone@1.0.4: {}
 
+  cloudscraper@4.6.0(brotli@1.3.3)(request@2.88.2):
+    dependencies:
+      brotli: 1.3.3
+      request: 2.88.2
+      request-promise: 4.2.6(request@2.88.2)
+
   color-convert@0.5.3: {}
 
   color-convert@2.0.1:
@@ -3459,8 +3543,7 @@ snapshots:
     dependencies:
       uglify-js: 2.4.24
 
-  core-util-is@1.0.2:
-    optional: true
+  core-util-is@1.0.2: {}
 
   core-util-is@1.0.3: {}
 
@@ -3522,7 +3605,6 @@ snapshots:
   dashdash@1.14.1:
     dependencies:
       assert-plus: 1.0.0
-    optional: true
 
   data-uri-to-buffer@6.0.2: {}
 
@@ -3678,7 +3760,6 @@ snapshots:
     dependencies:
       jsbn: 0.1.1
       safer-buffer: 2.1.2
-    optional: true
 
   emits@3.0.0: {}
 
@@ -3845,8 +3926,7 @@ snapshots:
 
   extend@1.2.1: {}
 
-  extend@3.0.2:
-    optional: true
+  extend@3.0.2: {}
 
   extract-zip@2.0.1:
     dependencies:
@@ -3858,8 +3938,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  extsprintf@1.3.0:
-    optional: true
+  extsprintf@1.3.0: {}
 
   fancy-log@1.3.3:
     dependencies:
@@ -3872,8 +3951,7 @@ snapshots:
 
   fast-fifo@1.3.2: {}
 
-  fast-json-stable-stringify@2.1.0:
-    optional: true
+  fast-json-stable-stringify@2.1.0: {}
 
   fd-slicer@1.1.0:
     dependencies:
@@ -3910,8 +3988,7 @@ snapshots:
   forever-agent@0.5.2:
     optional: true
 
-  forever-agent@0.6.1:
-    optional: true
+  forever-agent@0.6.1: {}
 
   fork-stream@0.0.4: {}
 
@@ -3929,7 +4006,13 @@ snapshots:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.35
-    optional: true
+
+  form-data@2.5.2:
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      mime-types: 2.1.35
+      safe-buffer: 5.2.1
 
   form-data@4.0.0:
     dependencies:
@@ -4015,7 +4098,6 @@ snapshots:
   getpass@0.1.7:
     dependencies:
       assert-plus: 1.0.0
-    optional: true
 
   gifsicle@0.1.7:
     dependencies:
@@ -4264,14 +4346,12 @@ snapshots:
     dependencies:
       glogg: 1.0.2
 
-  har-schema@2.0.0:
-    optional: true
+  har-schema@2.0.0: {}
 
   har-validator@5.1.5:
     dependencies:
       ajv: 6.12.6
       har-schema: 2.0.0
-    optional: true
 
   has-ansi@0.1.0:
     dependencies:
@@ -4341,7 +4421,6 @@ snapshots:
       assert-plus: 1.0.0
       jsprim: 1.4.2
       sshpk: 1.18.0
-    optional: true
 
   https-proxy-agent@5.0.1:
     dependencies:
@@ -4424,8 +4503,7 @@ snapshots:
 
   is-stream@3.0.0: {}
 
-  is-typedarray@1.0.0:
-    optional: true
+  is-typedarray@1.0.0: {}
 
   is-utf8@0.2.1: {}
 
@@ -4439,8 +4517,7 @@ snapshots:
 
   isobject@3.0.1: {}
 
-  isstream@0.1.2:
-    optional: true
+  isstream@0.1.2: {}
 
   jade@1.3.1:
     dependencies:
@@ -4465,21 +4542,17 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
-  jsbn@0.1.1:
-    optional: true
+  jsbn@0.1.1: {}
 
   jsbn@1.1.0: {}
 
   json-parse-even-better-errors@2.3.1: {}
 
-  json-schema-traverse@0.4.1:
-    optional: true
+  json-schema-traverse@0.4.1: {}
 
-  json-schema@0.4.0:
-    optional: true
+  json-schema@0.4.0: {}
 
-  json-stringify-safe@5.0.1:
-    optional: true
+  json-stringify-safe@5.0.1: {}
 
   jsonfile@6.1.0:
     dependencies:
@@ -4493,7 +4566,6 @@ snapshots:
       extsprintf: 1.3.0
       json-schema: 0.4.0
       verror: 1.10.0
-    optional: true
 
   kleur@3.0.3: {}
 
@@ -4876,8 +4948,7 @@ snapshots:
   oauth-sign@0.3.0:
     optional: true
 
-  oauth-sign@0.9.0:
-    optional: true
+  oauth-sign@0.9.0: {}
 
   object-assign@0.2.2: {}
 
@@ -5025,8 +5096,7 @@ snapshots:
 
   pend@1.2.0: {}
 
-  performance-now@2.1.0:
-    optional: true
+  performance-now@2.1.0: {}
 
   picocolors@1.1.1: {}
 
@@ -5101,16 +5171,14 @@ snapshots:
     dependencies:
       event-stream: 3.3.4
 
-  psl@1.9.0:
-    optional: true
+  psl@1.9.0: {}
 
   pump@3.0.2:
     dependencies:
       end-of-stream: 1.4.4
       once: 1.4.0
 
-  punycode@2.3.1:
-    optional: true
+  punycode@2.3.1: {}
 
   puppeteer-core@23.11.1:
     dependencies:
@@ -5155,8 +5223,7 @@ snapshots:
   qs@1.0.2:
     optional: true
 
-  qs@6.5.3:
-    optional: true
+  qs@6.5.3: {}
 
   queue-tick@1.0.1: {}
 
@@ -5220,6 +5287,19 @@ snapshots:
     dependencies:
       through: 2.3.8
 
+  request-promise-core@1.1.4(request@2.88.2):
+    dependencies:
+      lodash: 4.17.21
+      request: 2.88.2
+
+  request-promise@4.2.6(request@2.88.2):
+    dependencies:
+      bluebird: 3.7.2
+      request: 2.88.2
+      request-promise-core: 1.1.4(request@2.88.2)
+      stealthy-require: 1.1.1
+      tough-cookie: 2.5.0
+
   request@2.40.0:
     dependencies:
       forever-agent: 0.5.2
@@ -5260,7 +5340,6 @@ snapshots:
       tough-cookie: 2.5.0
       tunnel-agent: 0.6.0
       uuid: 3.4.0
-    optional: true
 
   require-directory@2.1.1: {}
 
@@ -5286,8 +5365,7 @@ snapshots:
 
   safe-buffer@5.1.2: {}
 
-  safe-buffer@5.2.1:
-    optional: true
+  safe-buffer@5.2.1: {}
 
   safer-buffer@2.1.2: {}
 
@@ -5427,9 +5505,10 @@ snapshots:
       jsbn: 0.1.1
       safer-buffer: 2.1.2
       tweetnacl: 0.14.5
-    optional: true
 
   stable@0.1.8: {}
+
+  stealthy-require@1.1.1: {}
 
   stream-combiner@0.0.4:
     dependencies:
@@ -5583,7 +5662,6 @@ snapshots:
     dependencies:
       psl: 1.9.0
       punycode: 2.3.1
-    optional: true
 
   tough-cookie@5.0.0:
     dependencies:
@@ -5620,10 +5698,8 @@ snapshots:
   tunnel-agent@0.6.0:
     dependencies:
       safe-buffer: 5.2.1
-    optional: true
 
-  tweetnacl@0.14.5:
-    optional: true
+  tweetnacl@0.14.5: {}
 
   twitter-api-v2@1.18.0: {}
 
@@ -5670,7 +5746,6 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
-    optional: true
 
   urlpattern-polyfill@10.0.0: {}
 
@@ -5679,8 +5754,7 @@ snapshots:
   uuid@1.4.2:
     optional: true
 
-  uuid@3.4.0:
-    optional: true
+  uuid@3.4.0: {}
 
   uuid@8.3.2: {}
 
@@ -5694,7 +5768,6 @@ snapshots:
       assert-plus: 1.0.0
       core-util-is: 1.0.2
       extsprintf: 1.3.0
-    optional: true
 
   vinyl-fs@0.1.4:
     dependencies:
