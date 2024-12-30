@@ -31,7 +31,7 @@ export async function scrapeFortniteCCU(url: string): Promise<number | null> {
     const browser = await puppeteer.launch({
       headless: true,
       // Désactive la sandbox
-      args: ['--no-sandbox', '--disable-setuid-sandbox'], 
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     console.log('[SCRAPE] Navigateur lancé avec --no-sandbox.');
 
@@ -137,39 +137,87 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
 
   // Tri par date (au cas où)
   entries.sort((a, b) => a.timestamp - b.timestamp);
+
   // Labels
   const labels = entries.map((entry) => moment(entry.timestamp).format('DD/MM HH:mm'));
   // Data
   const data = entries.map((entry) => entry.ccu);
 
+  /**
+   * Astuce pour obtenir un beau gradient vertical sous la ligne :
+   * On utilise la callback backgroundColor pour créer un gradient
+   * en fonction du contexte de rendu (chart.ctx).
+   */
   const configuration: any = {
     type: 'line',
     data: {
       labels,
       datasets: [
         {
-          label: 'Nombre de joueurs connectés',
+          label: 'Joueurs connectés',
           data,
-          borderColor: '#7289da', 
-          backgroundColor: 'rgba(114,137,218, 0.2)',
-          fill: true,
-          tension: 0.2,
+          borderColor: '#7289da',
+          borderWidth: 3,
+          // On crée un gradient "à la volée"
+          backgroundColor(context: any) {
+            const ctx = context.chart.ctx;
+            const gradient = ctx.createLinearGradient(0, 0, 0, context.chart.height);
+            gradient.addColorStop(0, 'rgba(114,137,218, 0.4)'); // Couleur plus intense en haut
+            gradient.addColorStop(1, 'rgba(114,137,218, 0)');   // Transparent en bas
+            return gradient;
+          },
+          fill: 'start',
+          tension: 0.4, // lissage
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: '#ffffff',
+          pointBorderColor: '#7289da',
+          pointBorderWidth: 2,
+          pointHoverBackgroundColor: '#7289da',
+          pointHoverBorderColor: '#ffffff',
         },
       ],
     },
     options: {
+      // Couleur générale du texte
+      color: '#ffffff',
       scales: {
         y: {
           beginAtZero: true,
-          title: { display: true, text: 'Joueurs simultanés', color: '#ffffff' },
+          title: {
+            display: true,
+            text: 'Joueurs simultanés',
+            color: '#ffffff',
+          },
+          // Grille en pointillé, plus subtile
+          grid: {
+            color: 'rgba(255, 255, 255, 0.2)',
+            borderDash: [3, 3],
+          },
           ticks: {
             color: '#ffffff',
+            font: {
+              family: 'Arial',
+              size: 12,
+            },
           },
         },
         x: {
-          title: { display: true, text: 'Date/Heure', color: '#ffffff' },
+          title: {
+            display: true,
+            text: 'Date/Heure',
+            color: '#ffffff',
+          },
+          grid: {
+            color: 'rgba(255, 255, 255, 0.2)',
+            borderDash: [3, 3],
+          },
           ticks: {
             color: '#ffffff',
+            font: {
+              family: 'Arial',
+              size: 12,
+            },
           },
         },
       },
@@ -178,12 +226,41 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
           display: true,
           text: title,
           color: '#ffffff',
+          font: {
+            family: 'Arial',
+            size: 16,
+          },
         },
         legend: {
           labels: {
             color: '#ffffff',
+            font: {
+              family: 'Arial',
+              size: 12,
+            },
           },
         },
+        tooltip: {
+          // Fond, couleurs et bords du tooltip
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff',
+          footerColor: '#ffffff',
+          cornerRadius: 4,
+          titleFont: {
+            family: 'Arial',
+            size: 14,
+          },
+          bodyFont: {
+            family: 'Arial',
+            size: 12,
+          },
+        },
+      },
+      // On peut aussi gérer les animations
+      animation: {
+        duration: 1000,
+        easing: 'easeOutQuart',
       },
     },
   };
