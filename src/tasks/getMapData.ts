@@ -129,57 +129,80 @@ const chartJSNodeCanvas = new ChartJSNodeCanvas({
 });
 
 async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: string) {
-  console.log(`[CHART] Génération du graphe : "${title}" -> ${outputPath}`);
+  console.log(`[CHART] Génération du graphe amélioré : "${title}" -> ${outputPath}`);
   if (entries.length === 0) {
     console.log('[CHART] Aucune data, on ne génère pas le graphique.');
     return;
   }
 
-  // Tri par date (au cas où)
+  // Tri par date
   entries.sort((a, b) => a.timestamp - b.timestamp);
 
-  // Labels
+  // Calcul des statistiques
+  const peak = Math.max(...entries.map(e => e.ccu));
+  const average = Math.round(entries.reduce((sum, e) => sum + e.ccu, 0) / entries.length);
+  const peakEntry = entries.find(e => e.ccu === peak)!;
+
+  // Labels et données
   const labels = entries.map((entry) => moment(entry.timestamp).format('DD/MM HH:mm'));
-  // Data
   const data = entries.map((entry) => entry.ccu);
 
-  /**
-   * Astuce pour obtenir un beau gradient vertical sous la ligne :
-   * On utilise la callback backgroundColor pour créer un gradient
-   * en fonction du contexte de rendu (chart.ctx).
-   */
   const configuration: any = {
     type: 'line',
     data: {
       labels,
       datasets: [
+        // Dataset principal
         {
           label: 'Joueurs connectés',
           data,
           borderColor: '#7289da',
           borderWidth: 3,
-          // On crée un gradient "à la volée"
           backgroundColor(context: any) {
             const ctx = context.chart.ctx;
             const gradient = ctx.createLinearGradient(0, 0, 0, context.chart.height);
-            gradient.addColorStop(0, 'rgba(114,137,218, 0.4)'); // Couleur plus intense en haut
-            gradient.addColorStop(1, 'rgba(114,137,218, 0)');   // Transparent en bas
+            gradient.addColorStop(0, 'rgba(114,137,218, 0.4)');
+            gradient.addColorStop(1, 'rgba(114,137,218, 0)');
             return gradient;
           },
           fill: 'start',
-          tension: 0.1, // lissage
-          pointRadius: 0,
-          pointHoverRadius: 6,
+          tension: 0.2,
+          pointRadius: (ctx: any) => {
+            // Marquer spécifiquement le pic et la dernière valeur
+            const index = ctx.dataIndex;
+            if (data[index] === peak || index === data.length - 1) {
+              return 6;
+            }
+            return 0;
+          },
+          pointHoverRadius: 8,
           pointBackgroundColor: '#ffffff',
           pointBorderColor: '#7289da',
           pointBorderWidth: 2,
           pointHoverBackgroundColor: '#7289da',
           pointHoverBorderColor: '#ffffff',
         },
+        // Ligne de moyenne
+        {
+          label: 'Moyenne',
+          data: Array(labels.length).fill(average),
+          borderColor: '#43b581',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false,
+        }
       ],
     },
     options: {
-      // Couleur générale du texte
+      layout: {
+        padding: {
+          top: 20,
+          right: 20,
+          bottom: 20,
+          left: 20
+        }
+      },
       color: '#ffffff',
       scales: {
         y: {
@@ -188,80 +211,116 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
             display: true,
             text: 'Joueurs simultanés',
             color: '#ffffff',
+            font: {
+              size: 14,
+              weight: 'bold'
+            }
           },
-          // Grille en pointillé, plus subtile
           grid: {
-            color: 'rgba(255, 255, 255, 0.2)',
+            color: 'rgba(255, 255, 255, 0.1)',
             borderDash: [3, 3],
           },
           ticks: {
             color: '#ffffff',
             font: {
-              family: 'Arial',
               size: 12,
             },
+            callback: (value: any) => {
+              return new Intl.NumberFormat('fr-FR').format(value);
+            }
           },
         },
         x: {
-          title: {
-            display: true,
-            text: 'Date/Heure',
-            color: '#ffffff',
-          },
           grid: {
-            color: 'rgba(255, 255, 255, 0.2)',
+            color: 'rgba(255, 255, 255, 0.1)',
             borderDash: [3, 3],
           },
           ticks: {
             color: '#ffffff',
             font: {
-              family: 'Arial',
               size: 12,
             },
+            maxRotation: 45,
+            minRotation: 45
           },
         },
       },
       plugins: {
         title: {
           display: true,
-          text: title,
+          text: [
+            title,
+            `Peak: ${new Intl.NumberFormat('fr-FR').format(peak)} joueurs (${moment(peakEntry.timestamp).format('DD/MM HH:mm')})`,
+            `Moyenne: ${new Intl.NumberFormat('fr-FR').format(average)} joueurs`
+          ],
           color: '#ffffff',
           font: {
-            family: 'Arial',
             size: 16,
+            weight: 'bold',
           },
+          padding: {
+            bottom: 30
+          }
         },
         legend: {
           labels: {
             color: '#ffffff',
             font: {
-              family: 'Arial',
               size: 12,
             },
+            usePointStyle: true,
+            pointStyle: 'circle',
           },
         },
         tooltip: {
-          // Fond, couleurs et bords du tooltip
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          backgroundColor: 'rgba(47, 49, 54, 0.9)',
           titleColor: '#ffffff',
           bodyColor: '#ffffff',
-          footerColor: '#ffffff',
-          cornerRadius: 4,
-          titleFont: {
-            family: 'Arial',
-            size: 14,
-          },
           bodyFont: {
-            family: 'Arial',
-            size: 12,
+            size: 14
+          },
+          padding: 12,
+          cornerRadius: 6,
+          displayColors: false,
+          callbacks: {
+            title: (tooltipItems: any) => {
+              return moment(entries[tooltipItems[0].dataIndex].timestamp).format('DD/MM/YYYY HH:mm');
+            },
+            label: (context: any) => {
+              const value = context.parsed.y;
+              return `${new Intl.NumberFormat('fr-FR').format(value)} joueurs`;
+            },
           },
         },
+        annotation: {
+          annotations: {
+            peakLine: {
+              type: 'line',
+              yMin: peak,
+              yMax: peak,
+              borderColor: '#faa61a',
+              borderWidth: 1,
+              borderDash: [5, 5],
+              label: {
+                backgroundColor: '#faa61a',
+                content: 'Peak',
+                display: true,
+                position: 'start'
+              }
+            }
+          }
+        }
       },
-      // On peut aussi gérer les animations
       animation: {
-        duration: 1000,
+        duration: 2000,
         easing: 'easeOutQuart',
       },
+      interaction: {
+        intersect: false,
+        mode: 'index',
+      },
+      responsive: true,
+      maintainAspectRatio: false,
     },
   };
 
