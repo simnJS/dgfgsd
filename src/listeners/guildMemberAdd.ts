@@ -1,7 +1,12 @@
-import type { Events } from '@sapphire/framework';
+import { ApplyOptions } from '@sapphire/decorators';
+import { Events } from '@sapphire/framework';
 import { Listener } from '@sapphire/framework';
 import type { GuildMember } from 'discord.js';
 import { EmbedBuilder } from 'discord.js';
+
+@ApplyOptions<Listener.Options>({
+	event: Events.GuildMemberAdd
+})
 export class GuildMemberAddEvent extends Listener<typeof Events.GuildMemberAdd> {
   public async run(member: GuildMember) {
 

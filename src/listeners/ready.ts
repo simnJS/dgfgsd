@@ -2,6 +2,9 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import type { StoreRegistryValue } from '@sapphire/pieces';
 import { blue, gray, green, magenta, magentaBright, white, yellow } from 'colorette';
+import cron from 'node-cron';
+import {main} from '../tasks/getMapData';
+
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -12,6 +15,11 @@ export class UserEvent extends Listener {
 	public override run() {
 		this.printBanner();
 		this.printStoreDebugInformation();
+    // Cronjob qui s'exécute toutes 1 minutes
+    cron.schedule('*/1 * * * *', async () => {
+    console.log('Lancement du cron : scraping + génération de graph...');
+    await main(this.container.client);
+});
 	}
 
 	private printBanner() {
@@ -43,9 +51,11 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 
 		for (const store of stores) logger.info(this.styleStore(store, false));
 		logger.info(this.styleStore(last, true));
+
 	}
 
 	private styleStore(store: StoreRegistryValue, last: boolean) {
 		return gray(`${last ? '└─' : '├─'} Loaded ${this.style(store.size.toString().padEnd(3, ' '))} ${store.name}.`);
 	}
 }
+
