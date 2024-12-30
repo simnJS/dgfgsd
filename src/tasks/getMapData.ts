@@ -156,39 +156,35 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
         {
           label: 'Joueurs connectés',
           data,
-          borderColor: '#7289da',
-          borderWidth: 3,
+          borderColor: '#5865f2', // Bleu Discord moderne
+          borderWidth: 2.5,
           backgroundColor(context: any) {
             const ctx = context.chart.ctx;
             const gradient = ctx.createLinearGradient(0, 0, 0, context.chart.height);
-            gradient.addColorStop(0, 'rgba(114,137,218, 0.4)');
-            gradient.addColorStop(1, 'rgba(114,137,218, 0)');
+            gradient.addColorStop(0, 'rgba(88, 101, 242, 0.3)');  // Plus subtil
+            gradient.addColorStop(1, 'rgba(88, 101, 242, 0)');
             return gradient;
           },
           fill: 'start',
-          tension: 0.2,
+          tension: 0.3, // Courbe plus lisse
           pointRadius: (ctx: any) => {
-            // Marquer spécifiquement le pic et la dernière valeur
-            const index = ctx.dataIndex;
-            if (data[index] === peak || index === data.length - 1) {
-              return 6;
-            }
-            return 0;
+            // Point uniquement pour le peak
+            return data[ctx.dataIndex] === peak ? 6 : 0;
           },
-          pointHoverRadius: 8,
+          pointHoverRadius: 6,
           pointBackgroundColor: '#ffffff',
-          pointBorderColor: '#7289da',
+          pointBorderColor: '#5865f2',
           pointBorderWidth: 2,
-          pointHoverBackgroundColor: '#7289da',
+          pointHoverBackgroundColor: '#5865f2',
           pointHoverBorderColor: '#ffffff',
         },
         // Ligne de moyenne
         {
           label: 'Moyenne',
           data: Array(labels.length).fill(average),
-          borderColor: '#43b581',
-          borderWidth: 2,
-          borderDash: [5, 5],
+          borderColor: 'rgba(87, 242, 135, 0.6)', // Vert plus moderne
+          borderWidth: 1.5,
+          borderDash: [4, 4],
           pointRadius: 0,
           fill: false,
         }
@@ -197,10 +193,10 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
     options: {
       layout: {
         padding: {
-          top: 20,
-          right: 20,
-          bottom: 20,
-          left: 20
+          top: 25,
+          right: 25,
+          bottom: 25,
+          left: 25
         }
       },
       color: '#ffffff',
@@ -210,21 +206,22 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
           title: {
             display: true,
             text: 'Joueurs simultanés',
-            color: '#ffffff',
+            color: 'rgba(255, 255, 255, 0.9)',
             font: {
-              size: 14,
-              weight: 'bold'
+              size: 13,
+              weight: '500'
             }
           },
           grid: {
-            color: 'rgba(255, 255, 255, 0.1)',
-            borderDash: [3, 3],
+            color: 'rgba(255, 255, 255, 0.06)', // Grille plus subtile
+            borderDash: [4, 4],
           },
           ticks: {
-            color: '#ffffff',
+            color: 'rgba(255, 255, 255, 0.8)',
             font: {
               size: 12,
             },
+            padding: 8,
             callback: (value: any) => {
               return new Intl.NumberFormat('fr-FR').format(value);
             }
@@ -232,16 +229,16 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
         },
         x: {
           grid: {
-            color: 'rgba(255, 255, 255, 0.1)',
-            borderDash: [3, 3],
+            display: false, // Suppression de la grille horizontale pour plus de clarté
           },
           ticks: {
-            color: '#ffffff',
+            color: 'rgba(255, 255, 255, 0.8)',
             font: {
-              size: 12,
+              size: 11,
             },
             maxRotation: 45,
-            minRotation: 45
+            minRotation: 45,
+            padding: 8
           },
         },
       },
@@ -250,37 +247,41 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
           display: true,
           text: [
             title,
-            `Peak: ${new Intl.NumberFormat('fr-FR').format(peak)} joueurs (${moment(peakEntry.timestamp).format('DD/MM HH:mm')})`,
-            `Moyenne: ${new Intl.NumberFormat('fr-FR').format(average)} joueurs`
+            `Peak: ${new Intl.NumberFormat('fr-FR').format(peak)} joueurs`,
+            `${moment(peakEntry.timestamp).format('DD/MM HH:mm')}`
           ],
           color: '#ffffff',
           font: {
-            size: 16,
-            weight: 'bold',
+            size: 15,
+            weight: '500',
+            lineHeight: 1.4
           },
           padding: {
-            bottom: 30
+            bottom: 25
           }
         },
         legend: {
           labels: {
-            color: '#ffffff',
+            color: 'rgba(255, 255, 255, 0.9)',
             font: {
               size: 12,
+              weight: '500'
             },
             usePointStyle: true,
             pointStyle: 'circle',
+            padding: 15
           },
         },
         tooltip: {
-          backgroundColor: 'rgba(47, 49, 54, 0.9)',
+          backgroundColor: 'rgba(32, 34, 37, 0.95)', // Fond plus foncé
           titleColor: '#ffffff',
           bodyColor: '#ffffff',
           bodyFont: {
-            size: 14
+            size: 13,
+            weight: '500'
           },
           padding: 12,
-          cornerRadius: 6,
+          cornerRadius: 8,
           displayColors: false,
           callbacks: {
             title: (tooltipItems: any) => {
@@ -292,32 +293,14 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
             },
           },
         },
-        annotation: {
-          annotations: {
-            peakLine: {
-              type: 'line',
-              yMin: peak,
-              yMax: peak,
-              borderColor: '#faa61a',
-              borderWidth: 1,
-              borderDash: [5, 5],
-              label: {
-                backgroundColor: '#faa61a',
-                content: 'Peak',
-                display: true,
-                position: 'start'
-              }
-            }
-          }
-        }
       },
       animation: {
-        duration: 2000,
-        easing: 'easeOutQuart',
+        duration: 1500,
+        easing: 'easeInOutQuart',
       },
       interaction: {
         intersect: false,
-        mode: 'index',
+        mode: 'nearest',
       },
       responsive: true,
       maintainAspectRatio: false,
