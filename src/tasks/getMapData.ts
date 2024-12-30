@@ -1,13 +1,17 @@
 /********************************************************************
  *  SCRAPE FORTNITE CCU
  ********************************************************************/
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import fs from 'fs';
 import path from 'path';
 import moment from 'moment';
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
 import { SapphireClient } from '@sapphire/framework';
 import { AttachmentBuilder, EmbedBuilder, TextChannel } from 'discord.js';
+
+// Active le plugin stealth (si installé)
+puppeteer.use(StealthPlugin());
 
 // ----------------------------------------------------------------
 // 1) Fonction pour récupérer le CCU Fortnite via Puppeteer
@@ -19,6 +23,7 @@ export async function scrapeFortniteCCU(url: string): Promise<number | null> {
     console.log('[SCRAPE] Lancement de Puppeteer...');
     const browser = await puppeteer.launch({
       headless: true,
+      // Désactive la sandbox
       args: ['--no-sandbox', '--disable-setuid-sandbox'], 
     });
     console.log('[SCRAPE] Navigateur lancé avec --no-sandbox.');
@@ -27,6 +32,16 @@ export async function scrapeFortniteCCU(url: string): Promise<number | null> {
     console.log('[SCRAPE] Nouvelle page créée, accès à l\'URL...');
     await page.goto(url, { waitUntil: 'networkidle2' });
     console.log('[SCRAPE] Page chargée.');
+
+    // DEBUG 1 : screenshot complet
+    const debugScreenshot = path.join(__dirname, '../debug.png');
+    await page.screenshot({ path: debugScreenshot, fullPage: true });
+    console.log(`[SCRAPE] Screenshot enregistré : ${debugScreenshot}`);
+
+    // DEBUG 2 : loguer un extrait du HTML
+    const html = await page.content();
+    console.log('[SCRAPE] Extrait du HTML (500 premiers caractères) :');
+    console.log(html.slice(0, 500));
 
     // Récupération du texte du <span data-testid="ccu">
     console.log('[SCRAPE] Extraction de la valeur CCU...');
