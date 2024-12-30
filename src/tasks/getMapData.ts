@@ -238,7 +238,20 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
             },
             maxRotation: 45,
             minRotation: 45,
-            padding: 8
+            padding: 8,
+            callback: function(_value: any, index: number, values: any[]) {
+              // Calcul du nombre total de ticks souhaité (environ 6-8 selon la période)
+              const desiredTicks = values.length > 48 ? 8 : 6;
+              const step = Math.floor(values.length / desiredTicks);
+              
+              // N'affiche que les dates clés
+              if (index === 0 || // Première date
+                  index === values.length - 1 || // Dernière date
+                  index % step === 0) { // Dates intermédiaires espacées régulièrement
+                return moment(entries[index].timestamp).format('DD/MM HH:mm');
+              }
+              return '';
+            },
           },
         },
       },
@@ -372,7 +385,11 @@ export async function main(client: SapphireClient) {
   await generateCCUChart(ccuLastWeek, path.join(__dirname, `../charts/ccu-last-week.png`), 'Évolution du CCU (1 semaine)');
 
   console.log('[MAIN] Envoi sur Discord...');
-  await discordSendGraph('1323329404386148445', client);
+  let lastMessageId: string | undefined = undefined;
+  const messageId = await discordSendGraph('1323329404386148445', client, lastMessageId);
+  if (messageId) {
+    lastMessageId = messageId; // Stockage pour la prochaine utilisation
+  }
 
   console.log('[MAIN] Fin du script principal.');
 }
@@ -380,59 +397,85 @@ export async function main(client: SapphireClient) {
 // ----------------------------------------------------------------
 // 6) Envoi des images sur Discord
 // ----------------------------------------------------------------
-let lastMessageId = '1234567890'; // ID du dernier message envoyé
-
-async function discordSendGraph(channelId: string, client: SapphireClient) {
+async function discordSendGraph(channelId: string, client: SapphireClient, lastMessageId?: string) {
   console.log('[DISCORD] Début de discordSendGraph...');
-  const channel = await client.channels.fetch(channelId);
-  console.log('[DISCORD] Canal récupéré, vérification isTextBased...');
+  
+  try {
+    const channel = await client.channels.fetch(channelId);
+    
+    if (!channel?.isTextBased()) {
+      console.log('[DISCORD] Le canal n\'est pas textuel. Fin de discordSendGraph.');
+      return;
+    }
 
-  if (!channel?.isTextBased()) {
-    console.log('[DISCORD] Le canal n\'est pas textuel. Fin de discordSendGraph.');
-    return;
+    const textChannel = channel as TextChannel;
+
+    // Préparation des embeds et attachments
+    console.log('[DISCORD] Préparation des embeds...');
+    const embeds = [
+      new EmbedBuilder()
+        .setTitle('Évolution du CCU (1 heure)')
+        .setImage('attachment://ccu-last-hour.png')
+        .setColor('#5865f2'),
+      new EmbedBuilder()
+        .setTitle('Évolution du CCU (1 jour)')
+        .setImage('attachment://ccu-last-day.png')
+        .setColor('#5865f2'),
+      new EmbedBuilder()
+        .setTitle('Évolution du CCU (1 semaine)')
+        .setImage('attachment://ccu-last-week.png')
+        .setColor('#5865f2')
+    ];
+
+    const attachments = [
+      new AttachmentBuilder(path.join(__dirname, '../charts/ccu-last-hour.png')),
+      new AttachmentBuilder(path.join(__dirname, '../charts/ccu-last-day.png')),
+      new AttachmentBuilder(path.join(__dirname, '../charts/ccu-last-week.png'))
+    ];
+
+    // Gestion des messages existants
+    if (lastMessageId) {
+      console.log(`[DISCORD] Tentative de modification du message existant (ID: ${lastMessageId})...`);
+      try {
+        const existingMessage = await textChannel.messages.fetch(lastMessageId);
+        if (existingMessage) {
+          console.log('[DISCORD] Message existant trouvé, mise à jour...');
+          const updatedMessage = await existingMessage.edit({
+            content: '📊 Évolution du CCU Fortnite',
+            files: attachments,
+            embeds: embeds
+          });
+          console.log('[DISCORD] Message mis à jour avec succès');
+          return updatedMessage.id;
+        }
+      } catch (error) {
+        console.log('[DISCORD] Message existant non trouvé ou erreur de mise à jour');
+        // On continue vers la création d'un nouveau message
+      }
+    } else {
+      console.log('[DISCORD] Pas de message existant, nettoyage du canal...');
+      // Suppression des messages existants
+      try {
+        const messages = await textChannel.messages.fetch({ limit: 10 });
+        await textChannel.bulkDelete(messages);
+        console.log('[DISCORD] Canal nettoyé avec succès');
+      } catch (error) {
+        console.log('[DISCORD] Erreur lors du nettoyage du canal:', error);
+      }
+    }
+
+    // Envoi d'un nouveau message
+    console.log('[DISCORD] Envoi d\'un nouveau message...');
+    const message = await textChannel.send({
+      content: '📊 Évolution du CCU Fortnite',
+      files: attachments,
+      embeds: embeds
+    });
+
+    console.log(`[DISCORD] Nouveau message envoyé avec succès (ID: ${message.id})`);
+    return message.id;
+  } catch (error) {
+    console.error('[DISCORD] Erreur lors de l\'envoi du message:', error);
+    return null;
   }
-
-  const textChannel = channel as TextChannel;
-
-  console.log('[DISCORD] Préparation des embeds...');
-  const OneHourEmbed = new EmbedBuilder()
-    .setTitle('Évolution du CCU (1 heure)')
-    .setImage('attachment://ccu-last-hour.png')
-    .setColor('#7289da');
-
-  const OneDayEmbed = new EmbedBuilder()
-    .setTitle('Évolution du CCU (1 jour)')
-    .setImage('attachment://ccu-last-day.png')
-    .setColor('#7289da');
-
-  const OneWeekEmbed = new EmbedBuilder()
-    .setTitle('Évolution du CCU (1 semaine)')
-    .setImage('attachment://ccu-last-week.png')
-    .setColor('#7289da');
-
-  console.log('[DISCORD] Chargement des fichiers...');
-  const lastHourAttachment = new AttachmentBuilder(path.join(__dirname, '../charts/ccu-last-hour.png'));
-  const lastDayAttachment = new AttachmentBuilder(path.join(__dirname, '../charts/ccu-last-day.png'));
-  const lastWeekAttachment = new AttachmentBuilder(path.join(__dirname, '../charts/ccu-last-week.png'));
-
-  console.log(`[DISCORD] Récupération du dernier message avec ID=${lastMessageId} pour suppression éventuelle...`);
-  const lastMessage = await textChannel.messages.fetch(lastMessageId).catch(() => null);
-
-  if (lastMessage) {
-    console.log('[DISCORD] Dernier message trouvé, suppression...');
-    await lastMessage.delete();
-  } else {
-    console.log('[DISCORD] Aucun dernier message à supprimer.');
-  }
-
-  console.log('[DISCORD] Envoi du nouveau message...');
-  const message = await textChannel.send({
-    content: 'Évolution du CCU Fortnite :',
-    files: [lastHourAttachment, lastDayAttachment, lastWeekAttachment],
-    embeds: [OneHourEmbed, OneDayEmbed, OneWeekEmbed],
-  });
-
-  console.log(`[DISCORD] Message envoyé avec succès, new message ID = ${message.id}`);
-  lastMessageId = message.id;
-  console.log('[DISCORD] Fin de discordSendGraph.');
 }
