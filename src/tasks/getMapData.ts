@@ -167,7 +167,7 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
             return gradient;
           },
           fill: 'start',
-          tension: 0.4, // lissage
+          tension: 0.1, // lissage
           pointRadius: 0,
           pointHoverRadius: 6,
           pointBackgroundColor: '#ffffff',
