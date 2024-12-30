@@ -120,6 +120,8 @@ function writeCCUData(data: CCUEntry[]): void {
 // ----------------------------------------------------------------
 // 3) Génération de graphiques avec chartjs-node-canvas
 // ----------------------------------------------------------------
+const CHART_FONT = 'Inter'; // Police Inter (Google Fonts)
+
 const WIDTH = 800;
 const HEIGHT = 400;
 const chartJSNodeCanvas = new ChartJSNodeCanvas({
@@ -156,13 +158,14 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
         {
           label: 'Joueurs connectés',
           data,
-          borderColor: '#5865f2', // Bleu Discord moderne
-          borderWidth: 2.5,
+          borderColor: '#10b981', // Vert moderne type IA
+          borderWidth: 3,
           backgroundColor(context: any) {
             const ctx = context.chart.ctx;
             const gradient = ctx.createLinearGradient(0, 0, 0, context.chart.height);
-            gradient.addColorStop(0, 'rgba(88, 101, 242, 0.3)');  // Plus subtil
-            gradient.addColorStop(1, 'rgba(88, 101, 242, 0)');
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.15)');  // Vert subtil
+            gradient.addColorStop(0.5, 'rgba(16, 185, 129, 0.05)');
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
             return gradient;
           },
           fill: 'start',
@@ -205,23 +208,27 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Joueurs simultanés',
-            color: 'rgba(255, 255, 255, 0.9)',
+            text: 'JOUEURS SIMULTANÉS',
+            color: 'rgba(255, 255, 255, 0.95)',
             font: {
-              size: 13,
-              weight: '500'
+              size: 16,
+              weight: '600',
+              family: CHART_FONT,
+              letterSpacing: '0.05em'
             }
           },
           grid: {
-            color: 'rgba(255, 255, 255, 0.06)', // Grille plus subtile
-            borderDash: [4, 4],
+            color: 'rgba(255, 255, 255, 0.03)', // Grille très subtile
+            borderDash: [6, 6],
           },
           ticks: {
-            color: 'rgba(255, 255, 255, 0.8)',
+            color: 'rgba(255, 255, 255, 0.7)',
             font: {
-              size: 12,
+              size: 14,
+              family: CHART_FONT,
+              weight: '500'
             },
-            padding: 8,
+            padding: 10,
             callback: (value: any) => {
               return new Intl.NumberFormat('fr-FR').format(value);
             }
@@ -229,12 +236,14 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
         },
         x: {
           grid: {
-            display: false, // Suppression de la grille horizontale pour plus de clarté
+            display: false,
           },
           ticks: {
-            color: 'rgba(255, 255, 255, 0.8)',
+            color: 'rgba(255, 255, 255, 0.7)',
             font: {
-              size: 11,
+              size: 13,
+              family: CHART_FONT,
+              weight: '500'
             },
             maxRotation: 45,
             minRotation: 45,
@@ -270,31 +279,49 @@ async function generateCCUChart(entries: CCUEntry[], outputPath: string, title: 
         title: {
           display: true,
           text: [
-            title,
-            `Peak: ${new Intl.NumberFormat('fr-FR').format(peak)} joueurs`,
+            title.toUpperCase(),
+            `${new Intl.NumberFormat('fr-FR').format(peak)} JOUEURS MAX`,
             `${moment(peakEntry.timestamp).format('DD/MM HH:mm')}`
           ],
           color: '#ffffff',
           font: {
-            size: 15,
-            weight: '500',
-            lineHeight: 1.4
+            size: 20,
+            weight: '600',
+            family: CHART_FONT,
+            lineHeight: 1.6,
+            letterSpacing: '0.05em'
           },
           padding: {
-            bottom: 25
+            top: 30,
+            bottom: 30
           }
         },
         legend: {
           labels: {
             color: 'rgba(255, 255, 255, 0.9)',
             font: {
-              size: 12,
-              weight: '500'
+              size: 14,
+              weight: '500',
+              family: CHART_FONT
             },
             usePointStyle: true,
             pointStyle: 'circle',
-            padding: 15
+            padding: 20
           },
+        },
+        subtitle: {
+          display: true,
+          text: 'STATISTIQUES EN TEMPS RÉEL',
+          color: 'rgba(255, 255, 255, 0.5)',
+          font: {
+            size: 14,
+            weight: '600',
+            family: CHART_FONT,
+            letterSpacing: '0.1em'
+          },
+          padding: {
+            bottom: 20
+          }
         },
         tooltip: {
           backgroundColor: 'rgba(32, 34, 37, 0.95)', // Fond plus foncé
