@@ -355,7 +355,7 @@ export async function main(client: SapphireClient) {
   console.log('[MAIN] Début du script principal.');
 
   // 5.1 : On scrape la valeur de CCU actuelle
-  const urlFortnite = 'https://www.fortnite.com/@safia/5352-4561-8315?lang=fr';
+  const urlFortnite = 'https://www.fortnite.com/@safia/7871-7951-1081?lang=fr';
   console.log('[MAIN] Appel de scrapeFortniteCCU...');
   const currentCCU = await scrapeFortniteCCU(urlFortnite);
   console.log(`[MAIN] currentCCU = ${currentCCU}`);
