@@ -57,7 +57,7 @@ export async function scrapeFortniteCCU(url: string): Promise<number | null> {
       try {
         const data = window.__remixContext
           ?.state
-          ?.loaderData?.["routes/$creatorCode.$islandCode"];
+          ?.loaderData?.["routes/creative.island-codes.$islandCode"];
 
         if (!data?.island?.ccu) {
           console.warn('[SCRAPE] Impossible de trouver data.island.ccu');
